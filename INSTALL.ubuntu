@@ -1,0 +1,23 @@
+
+To compile Sonic Visualiser from source in Ubuntu 10.04
+-------------------------------------------------------
+
+See INSTALL for general notes on compilation.  This is a specific
+recipe for Ubuntu 10.04.
+
+Starting from a clean installation of Ubuntu 10.04 desktop edition,
+with a working network connection, with the Sonic Visualiser source
+code unpacked into $HOME/sonic-visualiser:
+
+$ cd sonic-visualiser
+$ sudo apt-get update
+$ sudo apt-get install build-essential libqt4-dev libsndfile-dev libsamplerate-dev fftw3-dev libbz2-dev libjack-dev libasound-dev libmad0-dev libid3tag0-dev liboggz-dev libfishsound-dev liblo-dev liblrdf-dev portaudio19-dev libpulse-dev librdf-dev librubberband-dev vamp-plugin-sdk
+$ qmake-qt4
+$ make
+
+And wait for some time for the build to complete.
+
+You should now have an executable file at sv/sonic-visualiser.  You
+don't need to properly install this -- just run it in place, or copy
+it to wherever you like.
+

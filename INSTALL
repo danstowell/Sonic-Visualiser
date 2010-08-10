@@ -1,0 +1,145 @@
+
+To compile from source
+----------------------
+
+First, please consider getting one of the ready-to-run binary
+distributions available from http://www.sonicvisualiser.org/ .
+
+This file provides various instructions useful when compiling Sonic
+Visualiser from source, but it doesn't have a complete recipe for any
+one platform -- there are too many variables.  However, you can find a
+recipe for one platform (Ubuntu Linux) in the file INSTALL.ubuntu.
+
+The following additional libraries are required or optional when
+building Sonic Visualiser:
+
+REQUIRED	Vamp Plugin SDK	v2.0	http://www.vamp-plugins.org/
+
+REQUIRED	Qt4 Free Edition	http://www.trolltech.com/
+REQUIRED	libsndfile		http://www.mega-nerd.com/libsndfile/
+REQUIRED	libsamplerate		http://www.mega-nerd.com/SRC/
+REQUIRED	FFTW3			http://www.fftw.org/
+REQUIRED	bzip2 library		http://www.bzip.org/
+REQUIRED	Redland RDF libraries   http://librdf.org/
+REQUIRED	Rubber Band		http://www.breakfastquay.com/rubberband/
+
+Optional	JACK			http://www.jackaudio.org/
+Optional	PortAudio v18 or v19	http://www.portaudio.com/
+Optional	PulseAudio    	 	http://www.pulseaudio.org/
+Optional	MAD mp3 decoder		http://www.underbit.com/products/mad/
+Optional	Oggz and fishsound	http://www.annodex.net/software/libraries.html
+Optional        liblo OSC library	http://www.plugin.org.uk/liblo/
+
+Although JACK, PortAudio, and PulseAudio are individually optional,
+you will need to have one or the other of them in order to get any
+audio playback.  Usually JACK is preferred on Linux with PulseAudio as
+a backup, and PortAudio is used elsewhere.
+
+The Redland RDF libraries include the Raptor RDF parser library,
+Rasqal RDF query library, and librdf, the Redland RDF datastore (which
+depends on both of those).  Sonic Visualiser uses Rasqal and Redland
+directly, and so indirectly also requires Raptor.  For best
+performance it's strongly recommended that you build with Redland
+1.0.8 or newer.
+
+On Linux, you will need the ALSA libraries (used for MIDI).
+
+If you happen to be using a Debian-based Linux, you probably want to
+apt-get install the following packages: libqt4-dev libsndfile1-dev
+libsamplerate0-dev fftw3-dev libbz2-dev libjack-dev libmad0-dev
+liboggz1-dev libfishsound1-dev libasound2-dev liblo0-dev liblrdf0-dev
+librdf0-dev .
+
+If you are building on a Unix-like system that supports pkg-config and
+uses it for all appropriate libraries (such as a modern Linux
+distribution) then you should be able to just run "qmake" (being
+careful to ensure it is the Qt 4 version of qmake you are running, and
+not a Qt 3 version).
+
+If you do not have pkg-config, you should first edit the file prf/sv.prf
+and comment out any of the optional HAVE_* lines (in the section
+starting "If you don't have pkg-config...") for library dependencies
+that you aren't using.  Then run the Qt 4 "qmake" command.  This will
+create the proper Makefile.
+
+(If you're on the Mac and you have Qt3 installed as well, you must
+export QMAKESPEC=macx-g++ before you do this, or Qt will get confused.)
+
+Then type "make".  The program will then either build, or not build.
+If it builds, the result will be a binary file in sv/sonic-visualiser
+(on Linux) or sv/release/Sonic Visualiser.exe (on Win32), or a bundle
+in sv/Sonic Visualiser.app.  There should be nothing to install apart
+from the executable itself and any of the above listed third-party
+shared libraries that are not already installed.
+
+
+Qt Library Version Requirements
+-------------------------------
+
+Sonic Visualiser requires Qt version 4.3 or newer.  It can not be
+built with Qt3 or with Qt 4.0.x, 4.1.x, or 4.2.x.
+
+
+A Note on SV Library Dependencies
+---------------------------------
+
+Sonic Visualiser compiles as a set of static libraries, with various
+dependencies.  In some cases these dependencies are circular (which
+may indicate a design flaw, or a "deliberate compromise").  You
+shouldn't need to know any of this just to build SV, but it may be of
+interest to developers.
+
+
+    Library      Provides             Depends on
+    -------      --------             ----------
+
+    audioio      Audio playback
+                                      -> base data plugin
+                                      -> QtCore
+
+    base         Miscellaneous handy classes
+                                      -> system
+                                      -> QtCore
+
+    data         File & network I/O
+                 FFT cache
+                 Data model abstraction classes
+                                      -> base
+                                      -> QtNetwork QtXml QtGui QtCore
+
+    framework    Application base classes
+                                      -> base layer view transform data widgets
+                                      -> QtNetwork QtXml QtGui QtCore
+
+    layer        Display layer implementations
+                                      -> base data view widgets
+                                      -> QtXml QtGui QtCore
+
+    plugin       Plugin loaders and interface classes
+                                      -> base system
+                                      -> QtXml QtCore
+
+    sv           Main application classes
+                                      -> base data view widgets framework
+                                        transform layer audioio
+                                      -> QtNetwork QtXml QtGui QtCore
+
+    system       Platform helper functions
+
+    transform    Model-to-model data processing
+                                      -> base data plugin widgets
+                                      -> QtXml QtGui QtCore
+
+    rdf          RDF data discovery and querying
+                                      -> base data plugin transform
+                                      -> QtNetwork QtGui QtCore
+
+    view         View and pane widgets
+                                      -> base data layer widgets
+                                      -> QtXml QtGui QtCore
+
+    widgets      Widget and other GUI classes
+                                      -> base data layer plugin view
+                                      -> QtXml QtGui QtCore
+
+

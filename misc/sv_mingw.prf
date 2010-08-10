@@ -1,0 +1,174 @@
+ 
+###
+### BEGIN CONFIGURABLE STUFF
+###
+
+CONFIG += release
+# precompile_header
+
+# Whizzy optimization flags here
+# 
+#linux-g++:QMAKE_CXXFLAGS_RELEASE += -DNDEBUG -DNO_TIMING -O2 -march=pentium3 -mfpmath=sse -ffast-math
+QMAKE_CXXFLAGS_RELEASE += -DNDEBUG -DNO_TIMING -O2
+# QMAKE_CXXFLAGS_RELEASE += -O3 -march=pentium4 -mfpmath=sse -msse -msse2 -ffast-math -fomit-frame-pointer
+# QMAKE_CXXFLAGS_RELEASE += -O3 -march=athlon-mp -mfpmath=sse -fomit-frame-pointer
+
+# To do a static build with gcc on Linux
+#
+LIBS += -Wl,-Bstatic
+DEFINES += BUILD_STATIC
+
+#PRECOMPILED_HEADER = /work/sonic-visualiser/pch.h
+
+
+# These are testable on platforms with pkg-config.  If you don't have
+# pkg-config, edit the "else" block below (see comments).
+#
+PKGCONFIG_PACKAGES = vamp vamp-sdk oggz fishsound mad fftw3f sndfile samplerate lrdf raptor jack liblo
+
+# No pkg-config test for the bzip2 library.  This library is required.
+# If you don't have it, install it.
+#
+DEFINES += HAVE_BZ2
+INCLUDEPATH += ../../packages/bzip2-1.0.4
+LIBS    += -L../../packages/bzip2-1.0.4 -lbz2
+
+# No pkg-config test for PortAudio.  If you don't have it, comment these out.
+# We support PortAudio v18 and v19; the default is v19.  If you want to use
+# v18, see below.
+#
+DEFINES += HAVE_PORTAUDIO
+INCLUDEPATH += ../../packages/portaudio/include
+LIBS    += -L../../packages/portaudio -lportaudio
+#
+# If you want to use PortAudio v18, uncomment this line (as well as
+# HAVE_PORTAUDIO above):
+#
+#DEFINES += HAVE_PORTAUDIO_v18
+
+
+#!system(pkg-config --atleast-pkgconfig-version=0) {
+
+    # If you don't have pkg-config, comment out (or install) any of the
+    # following that you lack.  If you have pkg-config, you should be
+    # able to ignore all this provided the right symbols are defined
+    # in PKGCONFIG_PACKAGES above.
+    #
+#    DEFINES += HAVE_JACK        # Optional -- an audio playback option
+#    DEFINES += HAVE_OGGZ        # Optional -- to import .ogg files
+#    DEFINES += HAVE_FISHSOUND   # Optional -- to import .ogg files
+    DEFINES += HAVE_MAD         # Optional -- to import .mp3 files
+    #
+#    LIBS    += -ljack
+#    LIBS    += -loggz -lfishsound
+    INCLUDEPATH += ../../packages/libmad-0.15.1b
+    LIBS    += -L../../packages/libmad-0.15.1b -lmad
+
+    # These ones are mandatory.
+    # If you don't have them, you'll have to find them.
+    #
+    DEFINES += HAVE_VAMP HAVE_VAMP_SDK    # Required -- for analysis plugins
+    DEFINES += HAVE_FFTW3F      # Required -- for all sorts of things
+    DEFINES += HAVE_SNDFILE     # Required -- to import and export .wav files
+    DEFINES += HAVE_SAMPLERATE  # Required -- for resampling
+    #
+#    INCLUDEPATH += ../../vamp-plugin-sdk ../../packages/fftw-3.1.2-dll ../../packages/libsndfile-1_0_17 ../../packages/libsamplerate-0.1.2/src
+#    LIBS += -L../../vamp-plugin-sdk/vamp-sdk -L../../packages/fftw-3.1.2-dll -L../../packages/libsndfile-1.0.17 -L../../packages/libsamplerate-0.1.2
+    INCLUDEPATH += ../../vamp-plugin-sdk ../../packages/fftw-3.1.2-dll  ../../packages/libsndfile-1.0.17/src ../../packages/libsamplerate-0.1.2/src
+    LIBS += -L../../vamp-plugin-sdk/vamp-sdk -L../../packages/fftw-3.1.2-dll  -L../../packages/libsndfile-1.0.17 -L../../packages/libsamplerate-0.1.2
+    #
+    LIBS    += -lvamp-sdk -Wl,-Bdynamic -lfftw3f-3 -Wl,-Bstatic -lsndfile -lsamplerate
+#    LIBS    += -lvamp-sdk -Wl,-Bdynamic -Wl,-Bstatic -lsndfile -lsamplerate
+#    LIBS    += -lvamp-sdk -lsndfile -lsamplerate
+#}
+
+###
+### END CONFIGURABLE STUFF
+###
+
+
+#system(pkg-config --atleast-pkgconfig-version=0) {
+linux-g++ {
+
+    # If you have pkg-config, this block should locate all packages
+    # for you provided they have .pc files and are listed in
+    # PKGCONFIG_PACKAGES.
+    #
+    for(PKG, PKGCONFIG_PACKAGES) {
+        contains(SV_UNIT_PACKAGES, $$PKG) {
+            system(pkg-config --exists $$PKG) {
+                VERSION = $$system(pkg-config --modversion $$PKG)
+                PACKAGE_SYMBOL = $$system(echo $$PKG | tr '[a-z-]' '[A-Z_]')
+                VERSION_SYMBOL = $$PACKAGE_SYMBOL'_VERSION'
+                DEFINES += HAVE_$$PACKAGE_SYMBOL
+                QMAKE_CXXFLAGS += -D"'"$$VERSION_SYMBOL='"'$$VERSION'"'"'"
+                QMAKE_CXXFLAGS +=  $$system(pkg-config --cflags $$PKG)
+                LIBS += $$system(pkg-config --libs $$PKG)
+                message("Using pkg-config package $$PKG with version $$VERSION")
+            } else {
+                message("WARNING: Failed to find pkg-config package $$PKG")
+            }
+        }
+    }
+}
+
+contains(SV_UNIT_PACKAGES, portaudio) {
+    contains(DEFINES, HAVE_PORTAUDIO) {
+        message("Including PortAudio support for audio playback")
+    } else {
+        message("WARNING: PortAudio audio playback support will not be included")
+    }
+}
+
+contains(SV_UNIT_PACKAGES, jack) {
+    contains(DEFINES, HAVE_JACK) {
+        message("Including JACK support for audio playback")
+    } else {
+        !win32:message("WARNING: JACK audio playback support will not be included")
+        !contains(DEFINES, HAVE_PORTAUDIO) {
+            message("WARNING: No audio playback support is configured!")
+        }
+    }
+}
+
+contains(SV_UNIT_PACKAGES, oggz) {
+    contains(DEFINES, HAVE_OGGZ) {
+        contains(DEFINES, HAVE_FISHSOUND) {
+            message("Including .ogg file import")
+        } else {
+        message("WARNING: .ogg file import will not be included")
+        }
+    } else {
+        message("WARNING: .ogg file import will not be included")
+    }
+}
+
+contains(SV_UNIT_PACKAGES, mad) {
+    contains(DEFINES, HAVE_MAD) {
+        message("Including .mp3 file import")
+    } else {
+        message("WARNING: .mp3 file import will not be included")
+    }
+}
+
+contains(SV_UNIT_PACKAGES, vamp):!contains(DEFINES, HAVE_VAMP):error("Vamp plugin API required")
+contains(SV_UNIT_PACKAGES, vamp-sdk):!contains(DEFINES, HAVE_VAMP_SDK):error("Vamp plugin SDK required")
+contains(SV_UNIT_PACKAGES, bz2):!contains(DEFINES, HAVE_BZ2):error("bzip2 library required")
+#contains(SV_UNIT_PACKAGES, fftw3f):!contains(DEFINES, HAVE_FFTW3F):error("FFTW3f library required")
+contains(SV_UNIT_PACKAGES, sndfile):!contains(DEFINES, HAVE_SNDFILE):error("sndfile library required")
+contains(SV_UNIT_PACKAGES, samplerate):!contains(DEFINES, HAVE_SAMPLERATE):error("libsamplerate required")
+
+#VERSION_CFLAGS += -D"'"SVNREV='"'$$system(svnversion -n .)'"'"'"
+
+QMAKE_CXXFLAGS_DEBUG += -DBUILD_DEBUG $$VERSION_CFLAGS
+QMAKE_CXXFLAGS_RELEASE += -DBUILD_RELEASE $$VERSION_CFLAGS
+
+linux-g++ {
+    contains(DEFINES, BUILD_STATIC) {
+    	LIBS += -lFLAC -ldl
+    }
+}
+
+# Restore dynamic linkage, in case we went static earlier
+linux-g++:LIBS += -Wl,-Bdynamic
+
