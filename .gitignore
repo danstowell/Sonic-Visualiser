@@ -9,9 +9,8 @@
 **.o
 
 **/Makefile
-
+Makefile
 
 sv/sonic-visualiser
-
-
+sv/qrc_sonic-visualiser.cpp
 
