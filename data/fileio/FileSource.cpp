@@ -252,10 +252,27 @@ void
 FileSource::init()
 {
     if (!isRemote()) {
+
+        bool literal = false;
+        //DAN
+        if(m_url.scheme() == "svtpl"){
+             std::cerr << "DAN: handling svtpl: address " << m_url.toString().toStdString() << std::endl;
+             // Note: we use URL substring [5..] which deliberately drops the "svtpl" but not the ":", 
+             //  since we want a filepath starting with ":" (Qt's flag for a baked-in file resource)
+             m_localFilename = m_url.toString().mid(5);
+             literal = true;
+             std::cerr << "DAN: local filename " << m_localFilename.toStdString() << std::endl;
+        }else{
+
+
 #ifdef DEBUG_FILE_SOURCE
         std::cerr << "FileSource::init: Not a remote URL" << std::endl;
+        std::cerr << "FileSource::init: URL tostring as \""
+                  << m_url.toString().toStdString()
+                  << "\" and when tolocalfiled, \""
+                  << m_url.toLocalFile().toStdString() << "\""
+                  << std::endl;
 #endif
-        bool literal = false;
         m_localFilename = m_url.toLocalFile();
         if (m_localFilename == "") {
             // QUrl may have mishandled the scheme (e.g. in a DOS path)
@@ -268,6 +285,10 @@ FileSource::init()
         std::cerr << "FileSource::init: URL translates to local filename \""
                   << m_localFilename.toStdString() << "\"" << std::endl;
 #endif
+
+        //DAN
+        }
+
         m_ok = true;
         m_lastStatus = 200;
 
@@ -503,7 +524,7 @@ FileSource::isRemote(QString fileOrUrl)
 {
     // Note that a "scheme" with length 1 is probably a DOS drive letter
     QString scheme = QUrl(fileOrUrl).scheme().toLower();
-    if (scheme == "" || scheme == "file" || scheme.length() == 1) return false;
+    if (scheme == "" || scheme == "file" || scheme == "svtpl" || scheme.length() == 1) return false;
     return true;
 }
 
@@ -513,7 +534,7 @@ FileSource::canHandleScheme(QUrl url)
     // Note that a "scheme" with length 1 is probably a DOS drive letter
     QString scheme = url.scheme().toLower();
     return (scheme == "http" || scheme == "ftp" ||
-            scheme == "file" || scheme == "" || scheme.length() == 1);
+            scheme == "file" || scheme == "svtpl" || scheme == "" || scheme.length() == 1);
 }
 
 bool
