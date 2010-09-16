@@ -1132,11 +1132,11 @@ MainWindowBase::openAudio(FileSource source, AudioFileOpenMode mode, QString tem
     //DAN
     bool loadedTemplate = false;
     if ((mode == ReplaceMainModel) && (templateName.length() != 0)) {
-        FileOpenStatus tplStatus = openSessionFile("qrc:/templates/testtemplate.sv");
+        FileOpenStatus tplStatus = openSessionFile("file::templates/testtemplate.xml");
         if(tplStatus != FileOpenFailed) {
             loadedTemplate = true;
-            mode = ReplaceCurrentPane;
-            mode = CreateAdditionalModel;
+//rm            mode = ReplaceCurrentPane;
+//rm            mode = CreateAdditionalModel;
             mode = ReplaceMainModel;
         }
     }
