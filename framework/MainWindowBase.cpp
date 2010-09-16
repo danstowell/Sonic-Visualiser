@@ -1132,7 +1132,7 @@ MainWindowBase::openAudio(FileSource source, AudioFileOpenMode mode, QString tem
     //DAN
     bool loadedTemplate = false;
     if ((mode == ReplaceMainModel) && (templateName.length() != 0)) {
-        FileOpenStatus tplStatus = openSessionFile("testtemplate.sv");
+        FileOpenStatus tplStatus = openSessionFile(":templates/testtemplate.sv");
         if(tplStatus != FileOpenFailed) {
             loadedTemplate = true;
             mode = ReplaceCurrentPane;
