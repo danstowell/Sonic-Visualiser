@@ -273,13 +273,20 @@ FileSource::init()
                   << m_url.toLocalFile().toStdString() << "\""
                   << std::endl;
 #endif
-        m_localFilename = m_url.toLocalFile();
-        if (m_localFilename == "") {
-            // QUrl may have mishandled the scheme (e.g. in a DOS path)
-            m_localFilename = m_url.toString();
-            literal = true;
+        if(m_url.scheme() == "qrc"){
+             // Note: we use URL substring [3..] which deliberately drops the "qrc" but not the ":", 
+             //  since we want a filepath starting with ":" (Qt's flag for a baked-in file resource)
+             m_localFilename = ":" + m_url.toString().mid(5);
+             literal = true;
+        }else{
+            m_localFilename = m_url.toLocalFile();
+            if (m_localFilename == "") {
+                // QUrl may have mishandled the scheme (e.g. in a DOS path)
+                m_localFilename = m_url.toString();
+                literal = true;
+            }
+            m_localFilename = QFileInfo(m_localFilename).absoluteFilePath();
         }
-        m_localFilename = QFileInfo(m_localFilename).absoluteFilePath();
 
 #ifdef DEBUG_FILE_SOURCE
         std::cerr << "FileSource::init: URL translates to local filename \""
@@ -524,7 +531,7 @@ FileSource::isRemote(QString fileOrUrl)
 {
     // Note that a "scheme" with length 1 is probably a DOS drive letter
     QString scheme = QUrl(fileOrUrl).scheme().toLower();
-    if (scheme == "" || scheme == "file" || scheme == "svtpl" || scheme.length() == 1) return false;
+    if (scheme == "" || scheme == "file" || scheme == "qrc" || scheme.length() == 1) return false;
     return true;
 }
 
@@ -534,7 +541,7 @@ FileSource::canHandleScheme(QUrl url)
     // Note that a "scheme" with length 1 is probably a DOS drive letter
     QString scheme = url.scheme().toLower();
     return (scheme == "http" || scheme == "ftp" ||
-            scheme == "file" || scheme == "svtpl" || scheme == "" || scheme.length() == 1);
+            scheme == "file" || scheme == "qrc" || scheme == "" || scheme.length() == 1);
 }
 
 bool
