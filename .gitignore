@@ -1,0 +1,17 @@
+
+
+**/tmp_moc/**
+**/tmp_obj/**
+
+**.swp
+
+**.a
+**.o
+
+**/Makefile
+
+
+sv/sonic-visualiser
+
+
+
