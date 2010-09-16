@@ -95,7 +95,7 @@ public:
     virtual FileOpenStatus open(QString fileOrUrl, AudioFileOpenMode = AskUser);
     virtual FileOpenStatus open(FileSource source, AudioFileOpenMode = AskUser);
     
-    virtual FileOpenStatus openAudio(FileSource source, AudioFileOpenMode = AskUser);
+    virtual FileOpenStatus openAudio(FileSource source, AudioFileOpenMode = AskUser, QString templateName = "template");
     virtual FileOpenStatus openPlaylist(FileSource source, AudioFileOpenMode = AskUser);
     virtual FileOpenStatus openLayer(FileSource source);
     virtual FileOpenStatus openImage(FileSource source);
