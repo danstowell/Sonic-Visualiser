@@ -2276,21 +2276,23 @@ View::render(QPainter &paint, int xorigin, size_t f0, size_t f1)
 
 	for (LayerList::iterator i = m_layers.begin();
              i != m_layers.end(); ++i) {
+		if(!((*i)->isLayerDormant(this))){
 
-	    paint.setRenderHint(QPainter::Antialiasing, false);
+		    paint.setRenderHint(QPainter::Antialiasing, false);
 
-	    paint.save();
-            paint.translate(xorigin + x, 0);
+		    paint.save();
+	            paint.translate(xorigin + x, 0);
 
-            std::cerr << "Centre frame now: " << m_centreFrame << " drawing to " << chunk.x() + x + xorigin << ", " << chunk.width() << std::endl;
+	            std::cerr << "Centre frame now: " << m_centreFrame << " drawing to " << chunk.x() + x + xorigin << ", " << chunk.width() << std::endl;
 
-            (*i)->setSynchronousPainting(true);
+	            (*i)->setSynchronousPainting(true);
 
-	    (*i)->paint(this, paint, chunk);
+		    (*i)->paint(this, paint, chunk);
 
-            (*i)->setSynchronousPainting(false);
+	            (*i)->setSynchronousPainting(false);
 
-	    paint.restore();
+		    paint.restore();
+		}
 	}
     }
 
