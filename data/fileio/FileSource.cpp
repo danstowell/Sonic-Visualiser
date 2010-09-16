@@ -32,7 +32,7 @@
 
 #include <unistd.h>
 
-//#define DEBUG_FILE_SOURCE 1
+#define DEBUG_FILE_SOURCE 1
 
 int
 FileSource::m_count = 0;
