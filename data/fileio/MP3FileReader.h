@@ -49,6 +49,7 @@ public:
     virtual QString getLocation() const { return m_source.getLocation(); }
     virtual QString getTitle() const { return m_title; }
     virtual QString getMaker() const { return m_maker; }
+    virtual QString getGenre() const { return m_genre; }
     
     static void getSupportedExtensions(std::set<QString> &extensions);
     static bool supportsExtension(QString ext);
@@ -70,6 +71,7 @@ protected:
     QString m_error;
     QString m_title;
     QString m_maker;
+    QString m_genre;
     size_t m_fileSize;
     double m_bitrateNum;
     size_t m_bitrateDenom;

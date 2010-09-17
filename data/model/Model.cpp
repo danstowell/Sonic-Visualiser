@@ -160,6 +160,13 @@ Model::getMaker() const
 }
 
 QString
+Model::getGenre() const
+{
+    if (m_sourceModel) return m_sourceModel->getGenre();
+    else return "";
+}
+
+QString
 Model::getLocation() const
 {
     if (m_sourceModel) return m_sourceModel->getLocation();

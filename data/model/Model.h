@@ -79,6 +79,11 @@ public:
     virtual QString getMaker() const;
 
     /**
+     * Return the "genre" of the model, if known.
+     */
+    virtual QString getGenre() const;
+
+    /**
      * Return the location of the data in this model (e.g. source
      * URL).  This should not normally be returned for editable models
      * that have been edited.

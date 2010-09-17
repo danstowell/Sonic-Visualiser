@@ -174,6 +174,13 @@ WaveFileModel::getMaker() const
 }
 
 QString
+WaveFileModel::getGenre() const
+{
+    if (m_reader) return m_reader->getGenre();
+    return "";
+}
+
+QString
 WaveFileModel::getLocation() const
 {
     if (m_reader) return m_reader->getLocation();

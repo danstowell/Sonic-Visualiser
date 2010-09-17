@@ -50,6 +50,7 @@ public:
 
     QString getTitle() const;
     QString getMaker() const;
+    QString getGenre() const;
     QString getLocation() const;
 
     virtual Model *clone() const;

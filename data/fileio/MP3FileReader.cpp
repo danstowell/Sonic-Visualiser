@@ -189,6 +189,9 @@ MP3FileReader::loadTags()
     m_maker = loadTag(tag, "TPE1"); // "lead artist"
     if (m_maker == "") m_maker = loadTag(tag, "TPE2");
 
+    m_genre = loadTag(tag, "TCON"); // "content type" meaning genre
+    if (m_genre== "") m_genre = loadTag(tag, "TCO");
+
     id3_file_close(file);
 
 #else

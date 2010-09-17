@@ -60,6 +60,11 @@ public:
      */
     virtual QString getMaker() const { return ""; }
 
+    /**
+     * Return the genre of the work in the audio file, if known.
+     */
+    virtual QString getGenre() const { return ""; }
+
     /** 
      * Return interleaved samples for count frames from index start.
      * The resulting sample block will contain count *
