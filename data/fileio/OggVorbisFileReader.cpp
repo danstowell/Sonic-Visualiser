@@ -185,6 +185,13 @@ OggVorbisFileReader::acceptFrames(FishSound *fs, float **frames, long nframes,
                 reader->m_maker = QString::fromUtf8(comment->value);
             }
         }
+        {
+            const FishSoundComment *comment = fish_sound_comment_first_byname
+                (fs, "GENRE");
+            if (comment && comment->value) {
+                reader->m_genre = QString::fromUtf8(comment->value);
+            }
+        }
         reader->m_commentsRead = true;
     }
 
